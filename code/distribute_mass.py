@@ -55,7 +55,7 @@ def distribute_mass(xml_file, total_mass=70.0):
         return None
 
 if __name__ == '__main__':
-    fdir = "/home/xliu227/Github/RFC/khrylib/assets/mujoco_models/"
+    fdir = "/home/xliu227/Github/human-model-generator/code/models/humanModels/"
     fname = "mocap_v2"
     fpath = os.path.join(fdir, fname+".xml")
     # Read and modify XML with 75kg total mass
