@@ -7,7 +7,7 @@ import numpy as np
 
 OPT_CHECK_CONSISTENCY_MODEL = True  # 'True' or 'False
 OPT_VISUALIZZATION_MODEL = True  # 'True' or 'False
-OPT_VISUALIZZATION_MEASUREOFCONTROL = False  # 'True' or 'False
+OPT_VISUALIZZATION_MEASUREOFCONTROL = True  # 'True' or 'False
 
 
 OPT_COLOR_LINK_MESH = [0.9922, 0.8667, 0.7922, 1.0]
@@ -17,7 +17,7 @@ OPT_COLOR_MUSCLE_MESH = [0.9922, 0.8667, 0.7922, 1.0]
 """ ANTHROPOMETRIC MEASUREMENTS"""
 
 H = 1.75
-m = 68.5
+m = 75
 
 
 # some neck,trunk,arm and leg dimensions in [m]

@@ -11,7 +11,7 @@ from modelControl import *
 from checkModel import *
 from generateSyntheticData import *
 from modifyMeshModels import *
-
+from utils import *
 
 """ HUMAN MODEL PART"""
 

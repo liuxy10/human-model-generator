@@ -70,7 +70,7 @@ robot, gazebo_plugin_text = utils.load_robot_and_gazebo_plugins(
     URDF_TEMPLATE_FILE_PATH, dummy_file
 )
 
-
+print(robot, "*"* 100)
 #################################################################
 # LINK
 #################################################################
@@ -91,6 +91,9 @@ robot = modifyJointPosition(jointPosition, robot)
 #################################################################
 jointMusclePosition = scaleMuscleJoint(linkDimensions, jointMusclePosition)
 robot = modifyMuscleJointPosition(jointMusclePosition, robot)
+
+utils.write_urdf_to_file(robot, URDF_FILE_PATH, gazebo_plugin_text)
+
 #################################################################
 # ADD MESH
 #################################################################
@@ -98,6 +101,9 @@ scalingParam = getScalingParam(linkDimensions, linkDimensions_norm)
 scalingParamMesh = createScalingParamMesh(
     scalingParam, meshLinksName, mesh_name_mapping
 )
+
+
+
 robot = updateRobotWithMeshAndMuscles(
     scalingParamMesh,
     map_link_to_muscles,
@@ -107,8 +113,9 @@ robot = updateRobotWithMeshAndMuscles(
     OPT_COLOR_MUSCLE_MESH,
 )
 
+
 # Write URDF to a new file, also adding back the previously removed <gazebo> tags
-utils.write_urdf_to_file(robot, URDF_FILE_PATH, gazebo_plugin_text)
+# utils.write_urdf_to_file(robot, URDF_FILE_PATH, gazebo_plugin_text)
 
 print("[OUTPUT] Model successfully created. \u2713")
 print("[OUTPUT] Model successfully saved. \u2713")
@@ -225,40 +232,40 @@ if OPT_CHECK_CONSISTENCY_MODEL:
             "\n       2. Mass matrix remains positive throughout the entire dataset \u2713 "
         )
     print("\n[CHECK] PHYSICAL CONSISTENCY TESTS COMPLETED")
-#################################################################
-# VISUALIZZATION MODEL
-#################################################################
-if OPT_VISUALIZZATION_MODEL:
-    print("\n[INFO] Visualization :\n")
-    viz = iDynTree.Visualizer()
-    vizOpt = iDynTree.VisualizerOptions()
-    vizOpt.winWidth = 1500
-    vizOpt.winHeight = 1000
-    viz.init(vizOpt)
+# #################################################################
+# # VISUALIZZATION MODEL
+# #################################################################
+# if OPT_VISUALIZZATION_MODEL:
+#     print("\n[INFO] Visualization :\n")
+#     viz = iDynTree.Visualizer()
+#     vizOpt = iDynTree.VisualizerOptions()
+#     vizOpt.winWidth = 1500
+#     vizOpt.winHeight = 1000
+#     viz.init(vizOpt)
 
-    env = viz.enviroment()
-    env.setElementVisibility("floor_grid", True)
-    env.setElementVisibility("world_frame", True)
-    viz.setColorPalette("meshcat")
-    # frames = viz.frames()
-    cam = viz.camera()
-    cam.setPosition(iDynTree.Position(2, 1, 2.5))
-    viz.camera().animator().enableMouseControl(True)
+#     env = viz.enviroment()
+#     env.setElementVisibility("floor_grid", True)
+#     env.setElementVisibility("world_frame", True)
+#     viz.setColorPalette("meshcat")
+#     # frames = viz.frames()
+#     cam = viz.camera()
+#     cam.setPosition(iDynTree.Position(2, 1, 2.5))
+#     viz.camera().animator().enableMouseControl(True)
 
-    viz.addModel(mdlLoader.model(), "ModelVisualizer")
+#     viz.addModel(mdlLoader.model(), "ModelVisualizer")
 
-    gravity = [0.0, 0.0, -9.81]
-    quaternion_idyn = iDynTree.Vector4([1, 0, 0, 0])
-    G_T_b_rot = iDynTree.Rotation()
-    G_T_b_rot.fromQuaternion(quaternion_idyn)
-    G_T_b_pos = iDynTree.Position([0, 0, 0])
-    G_T_base = iDynTree.Transform(G_T_b_rot, G_T_b_pos)
-    s = [0] * ndofs
+#     gravity = [0.0, 0.0, -9.81]
+#     quaternion_idyn = iDynTree.Vector4([1, 0, 0, 0])
+#     G_T_b_rot = iDynTree.Rotation()
+#     G_T_b_rot.fromQuaternion(quaternion_idyn)
+#     G_T_b_pos = iDynTree.Position([0, 0, 0])
+#     G_T_base = iDynTree.Transform(G_T_b_rot, G_T_b_pos)
+#     s = [0] * ndofs
 
-    viz.modelViz("ModelVisualizer").setPositions(G_T_base, s)
+#     viz.modelViz("ModelVisualizer").setPositions(G_T_base, s)
 
-    while viz.run():
-        viz.draw()
+#     while viz.run():
+#         viz.draw()
 
 
 if OPT_VISUALIZZATION_MEASUREOFCONTROL:

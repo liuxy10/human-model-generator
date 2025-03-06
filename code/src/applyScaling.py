@@ -26,43 +26,26 @@ def setLinkLength(linkName, newLength, newRadius, newPosition, axis, geometries,
         None
     """
 
-    match axis:
-
-        case "X":
-
-            axis = geometry.Side.X
-
-        case "Y":
-
-            axis = geometry.Side.Y
-
-        case "Z":
-
-            axis = geometry.Side.Z
+    if axis == "X":
+        axis = geometry.Side.X
+    elif axis == "Y":
+        axis = geometry.Side.Y
+    elif axis == "Z":
+        axis = geometry.Side.Z
 
     Link_modifier = LinkModifier.from_name(linkName, robot, axis)
     Link_modifications = Modification()
 
     # Verify the geometry type
-    match geometries:
-
-        case "BOX":
-
+    if geometries == "BOX":
+        Link_modifications.add_dimension(newLength, absolute=True)
+    elif geometries == "CYLINDER":
+        if newLength is not None:
             Link_modifications.add_dimension(newLength, absolute=True)
-
-        case "CYLINDER":
-
-            if newLength != None:
-
-                Link_modifications.add_dimension(newLength, absolute=True)
-
-            if newRadius != None:
-
-                Link_modifications.add_radius(newRadius, absolute=True)
-
-        case "SPHERE":
-
+        if newRadius is not None:
             Link_modifications.add_radius(newRadius, absolute=True)
+    elif geometries == "SPHERE":
+        Link_modifications.add_radius(newRadius, absolute=True)
 
     if newPosition != None:
 
@@ -85,19 +68,12 @@ def setJointPosition(jointName, newJointPosition, axis, robot):
         None
     """
 
-    match axis:
-
-        case "X":
-
-            axis = geometry.Side.X
-
-        case "Y":
-
-            axis = geometry.Side.Y
-
-        case "Z":
-
-            axis = geometry.Side.Z
+    if axis == "X":
+        axis = geometry.Side.X
+    elif axis == "Y":
+        axis = geometry.Side.Y
+    elif axis == "Z":
+        axis = geometry.Side.Z
 
     joint_modifier = JointModifier.from_name(jointName, robot, axis)
     joint_modifications = Modification()
@@ -118,19 +94,14 @@ def setMassPercentage(linkName, newMass, axis, robot):
     Returns:
         None
     """
-    match axis:
-
-        case "X":
-
-            axis = geometry.Side.X
-
-        case "Y":
-
-            axis = geometry.Side.Y
-
-        case "Z":
-
-            axis = geometry.Side.Z
+    if axis =="X":
+        axis = geometry.Side.X
+    elif axis =="Y":
+        axis = geometry.Side.Y
+    elif axis == "Z":
+        axis = geometry.Side.Z
+    else:
+        raise ValueError("Invalid axis")
 
     Link_modifier = LinkModifier.from_name(linkName, robot, axis)
     Link_modifications = Modification()

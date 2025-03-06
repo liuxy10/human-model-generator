@@ -6,6 +6,17 @@ import numpy as np
 
 
 def scaleLink(H, linkDimensions):
+    """
+    Scales the dimensions of the links based on the given height.
+
+    Parameters:
+    - H (float): The height value used for scaling the dimensions.
+    - linkDimensions (dict): A dictionary containing the dimensions of the links.
+
+    Returns:
+    - linkDimensions (dict): The updated dictionary with scaled dimensions.
+    """
+    ...
     # Links' length and width modification
 
     # Common dimensions
@@ -50,6 +61,18 @@ def scaleLink(H, linkDimensions):
 
 
 def scaleJoint(linkDimensions, jointPosition):
+    """
+    Scales the joint positions based on the given link dimensions.
+
+    Args:
+        linkDimensions (dict): A dictionary containing the dimensions of different body links.
+        jointPosition (dict): A dictionary containing the positions of different joints.
+
+    Returns:
+        dict: A dictionary containing the updated joint positions.
+    """
+    # Code implementation goes here
+    pass
     # Joints' position modification
     jointPosition["jL5S1"]["X"] = 0
     jointPosition["jL5S1"]["Y"] = 0
