@@ -17,10 +17,25 @@ def process_body(body, linkMass, name_map):
                 n = n[4:]
             elif n.startswith("Right"):
                 n = n[5:]
-            pos = "0 0 0"
-            mass = str(linkMass[n + "_mass"])
-            ET.SubElement(body, "inertial", pos=pos, mass=mass)
-    print("at:", body.get("name"), "children:", [c.get("name") for c in body.findall("body")])
+            mass = linkMass[n + "_mass"]
+            print(f"mass of {n}:", mass)
+            
+        else:
+            mass = 0 
+            for n in name_map[name]:
+                if n.startswith("Left"):
+                    n = n[4:]
+                elif n.startswith("Right"):
+                    n = n[5:]
+                mass += linkMass[n + "_mass"]
+            print(f"mass of {n}:", mass)
+        # ET.SubElement(body, "inertial", pos=pos, mass=mass)
+        geom = body.find("geom")
+        if geom is not None:
+            geom.set("mass", str(mass))
+        else:
+            print(f"Warning: 'geom' element not found in body '{name}'")
+        # print("at:", body.get("name"), "children:", [c.get("name") for c in body.findall("body")])
 
 def assign_mass_inertia(H, m, linkDimensions, linkMass, input_mujoco_xml, output_mujoco_xml):
     name_map = {
@@ -32,7 +47,7 @@ def assign_mass_inertia(H, m, linkDimensions, linkMass, input_mujoco_xml, output
         "rtibia": "RightLowerLeg",
         "rfoot": ("RightFoot", "RightToe"),
         "upperback": "UpperTrunk",
-        "throax": "LowerTrunk",
+        "thorax": "LowerTrunk",
         "lowerneck": ("Head", "Neck"),
         "lclavicle": "LeftShoulder",
         "lhumerus": "LeftUpperArm",
@@ -47,6 +62,7 @@ def assign_mass_inertia(H, m, linkDimensions, linkMass, input_mujoco_xml, output
     linkDimensions = scaleLink(H, linkDimensions)
     linkMass = scaleMass(m, linkMass)
     
+    print("lowerTrunk:", linkMass["LowerTrunk_mass"])
     tree = ET.parse(input_mujoco_xml)
     root = tree.getroot()
     
@@ -127,3 +143,5 @@ if __name__ == "__main__":
     H = 1.75
     m = 75
     assign_mass_inertia(H, m, linkDimensions, linkMass, xml_input, xml_output)
+    
+    

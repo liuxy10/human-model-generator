@@ -3,10 +3,12 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 # src/__init__.py
-
-from modifyModels import *
-from modifyModels import *
-from scaleModels import *
+try: 
+    from modifyModels import *
+    from modifyModels import *
+    from scaleModels import *
+except ImportError:
+    pass
 from modelControl import *
 from checkModel import *
 from generateSyntheticData import *
