@@ -7,6 +7,66 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 from src import *
 from config import *
+def scale_torque_related_params(cfg, scale):
+    print("Scaling torque related parameters by", scale)
+    cfg.jkp *= scale
+    cfg.jkd  *= scale
+    cfg.torque_lim *= scale
+    return cfg
+
+
+
+def calculate_humanoid_height(model_path):
+    # Load the model
+    model = mujoco.MjModel.from_xml_path(model_path)
+    # write the model in local coordinate
+    data = mujoco.MjData(model)
+    
+    # Reset the simulation to default pose
+    mujoco.mj_resetData(model, data)
+    
+    # reset the hip joint z direction to +- 0.3 rad
+    data.qpos[6] = -0.3
+    data.qpos[12] = 0.3
+    # print(data.qpos)
+    # Find the highest and lowest points in the model
+    # First, forward kinematics to update body positions
+    mujoco.mj_forward(model, data)
+    
+    # Initialize min and max height values
+    min_height = float('inf')
+    max_height = float('-inf')
+    
+    # Check all geoms to find the highest and lowest points
+    for i in range(model.ngeom):
+        # Get geom position
+        geom_pos = data.geom_xpos[i]
+        
+        # For sphere and capsule geoms, consider their size
+        if model.geom_type[i] == mujoco.mjtGeom.mjGEOM_SPHERE:
+            geom_height = geom_pos[2]
+            geom_size = model.geom_size[i, 0]  # Radius for sphere
+            min_height = min(min_height, geom_height - geom_size)
+            max_height = max(max_height, geom_height + geom_size)
+        elif model.geom_type[i] == mujoco.mjtGeom.mjGEOM_CAPSULE:
+            geom_height = geom_pos[2]
+            geom_radius = model.geom_size[i, 0]
+            min_height = min(min_height, geom_height - geom_radius)
+            max_height = max(max_height, geom_height + geom_radius)
+        elif model.geom_type[i] == mujoco.mjtGeom.mjGEOM_BOX:
+            geom_height = geom_pos[2]
+            geom_halfsize = model.geom_size[i, 2]  # z-dimension half-size
+            min_height = min(min_height, geom_height - geom_halfsize)
+            max_height = max(max_height, geom_height + geom_halfsize)
+        else:
+            # For other geom types, just use the center position
+            min_height = min(min_height, geom_pos[2])
+            max_height = max(max_height, geom_pos[2])
+    
+    # Calculate total height
+    total_height = max_height - min_height
+    
+    return total_height
 
 def process_body(body, linkMass, name_map):
     name = body.get("name")
@@ -37,7 +97,7 @@ def process_body(body, linkMass, name_map):
             print(f"Warning: 'geom' element not found in body '{name}'")
         # print("at:", body.get("name"), "children:", [c.get("name") for c in body.findall("body")])
 
-def assign_mass_inertia(H, m, linkDimensions, linkMass, input_mujoco_xml, output_mujoco_xml):
+def assign_mass_inertia( m, linkMass, input_mujoco_xml, output_mujoco_xml):
     name_map = {
         "root": "Pelvis",
         "lfemur": "LeftUpperLeg",
@@ -59,7 +119,7 @@ def assign_mass_inertia(H, m, linkDimensions, linkMass, input_mujoco_xml, output
         "rwrist": "RightHand"
     }
     
-    linkDimensions = scaleLink(H, linkDimensions)
+    
     linkMass = scaleMass(m, linkMass)
     
     print("lowerTrunk:", linkMass["LowerTrunk_mass"])
@@ -68,7 +128,7 @@ def assign_mass_inertia(H, m, linkDimensions, linkMass, input_mujoco_xml, output
     
     for body in root.findall(".//body"):
         process_body(body, linkMass, name_map)
-        
+    # print()    
     tree.write(output_mujoco_xml)
 
 def convert_urdf_to_mujoco(urdf_path, output_xml_path):
